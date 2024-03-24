@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types';
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route, Link, useParams
 } from "react-router-dom"
 
 const Menu = () => {
@@ -17,14 +18,48 @@ const Menu = () => {
   )
 }
 
+const Anecdote = ({ find }) => { 
+  const id = useParams().id
+  const anecdote = find(id)
+  console.log(anecdote)
+  return(
+    <div>
+      <h2>{anecdote.author}</h2>
+      <p>{anecdote.content}</p>
+      <p>{anecdote.info}</p>
+      <p>{anecdote.votes}</p>
+    </div>
+  )
+}
+
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >{anecdote.content}</li>)}
+      {anecdotes.map(anecdote => 
+        <li key={anecdote.id} >
+          <Link to={`/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>
+      )}
     </ul>
   </div>
 )
+
+Anecdote.propTypes = {
+ find: PropTypes.func.isRequired,
+}
+
+AnecdoteList.propTypes = {
+ anecdotes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      content: PropTypes.string.isRequired,
+      author: PropTypes.string,
+      info: PropTypes.string,
+      votes: PropTypes.number
+    })
+ ).isRequired
+}
 
 const About = () => (
   <div>
@@ -112,8 +147,9 @@ const App = () => {
     setAnecdotes(anecdotes.concat(anecdote))
   }
 
-  const anecdoteById = (id) =>
-    anecdotes.find(a => a.id === id)
+  const anecdoteById = (id) => {
+    return anecdotes.find(a => a.id === Number(id));
+  }
 
   const vote = (id) => {
     const anecdote = anecdoteById(id)
@@ -133,6 +169,7 @@ const App = () => {
       <Menu/>
 
       <Routes>
+        <Route path="/:id" element={<Anecdote find={anecdoteById}/>} />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/about" element={<About />} />
         <Route path="/create" element={<CreateNew addNew={addNew}  />} />
