@@ -102,6 +102,13 @@ const CreateNew = (props) => {
     props.setNotification(`a new anecdote by ${author.value} has been created`)
   }
 
+  const handlePlaceholder = (e) => {
+    e.preventDefault()
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
@@ -112,7 +119,8 @@ const CreateNew = (props) => {
             name='content' 
             type={content.type} 
             value={content.value} 
-            onChange={content.onChange} />
+            onChange={content.onChange} 
+            placeholder='content'/>
         </div>
         <div>
           author
@@ -120,7 +128,8 @@ const CreateNew = (props) => {
             name='author' 
             type={author.type} 
             value={author.value} 
-            onChange={author.onChange} />
+            onChange={author.onChange} 
+            placeholder='author'/>
         </div>
         <div>
           url for more info
@@ -128,10 +137,13 @@ const CreateNew = (props) => {
             name='info' 
             type={info.type} 
             value={info.value} 
-            onChange={info.onChange} />
+            onChange={info.onChange}
+            placeholder='info' />
         </div>
         <button>create</button>
       </form>
+      <button onClick={handlePlaceholder}>reset</button>
+
     </div>
   )
 

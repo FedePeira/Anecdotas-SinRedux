@@ -7,9 +7,27 @@ export const useField = (type) => {
     setValue(event.target.value)
   }
 
+  const reset = () => {
+    setValue('')
+  }
+
   return {
     type,
     value,
-    onChange
+    onChange, 
+    reset
+  }
+}
+
+export const usePlaceholder = () => {
+  const [placeholder, setPlaceholder] = useState('')
+
+  const onChangePlaceholder = (event) => {
+    setPlaceholder(event.target.value)
+  }
+
+  return {
+    placeholder,
+    onChangePlaceholder
   }
 }
