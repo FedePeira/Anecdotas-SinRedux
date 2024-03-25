@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types';
 import {
   BrowserRouter as Router,
@@ -18,6 +18,7 @@ const Menu = () => {
   )
 }
 
+
 const Anecdote = ({ find }) => { 
   const id = useParams().id
   const anecdote = find(id)
@@ -31,7 +32,6 @@ const Anecdote = ({ find }) => {
     </div>
   )
 }
-
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
@@ -44,11 +44,9 @@ const AnecdoteList = ({ anecdotes }) => (
     </ul>
   </div>
 )
-
 Anecdote.propTypes = {
  find: PropTypes.func.isRequired,
 }
-
 AnecdoteList.propTypes = {
  anecdotes: PropTypes.arrayOf(
     PropTypes.shape({
@@ -60,6 +58,7 @@ AnecdoteList.propTypes = {
     })
  ).isRequired
 }
+
 
 const About = () => (
   <div>
@@ -75,6 +74,7 @@ const About = () => (
   </div>
 )
 
+
 const Footer = () => (
   <div>
     Anecdote app for <a href='https://fullstackopen.com/'>Full Stack Open</a>.
@@ -82,6 +82,7 @@ const Footer = () => (
     See <a href='https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js'>https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js</a> for the source code.
   </div>
 )
+
 
 const CreateNew = (props) => {
   const [content, setContent] = useState('')
@@ -97,6 +98,7 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    props.setNotification(`a new anecdote by ${author} has been created`)
   }
 
   return (
@@ -121,6 +123,39 @@ const CreateNew = (props) => {
   )
 
 }
+CreateNew.propTypes = {
+  addNew: PropTypes.func.isRequired,
+  setNotification: PropTypes.func.isRequired,
+}
+
+
+const Notification = ({ message }) => {
+  const [visible, setVisible] = useState(false);
+
+  console.log(visible)
+  useEffect(() => {
+    if (message) {
+      setVisible(true); 
+      const timer = setTimeout(() => {
+        setVisible(false); 
+      }, 3000);
+
+      return () => clearTimeout(timer); 
+    }
+ }, [message])
+
+ if (!visible) {
+    return null;
+ }
+  
+  return(
+    <p>{message}</p>
+  )
+}
+Notification.propTypes = {
+  message: PropTypes.string.isRequired,
+}
+
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -165,14 +200,14 @@ const App = () => {
   return (
     <Router>
       <h1>Software anecdotes</h1>
-
       <Menu/>
+      <Notification message={notification}/>
 
       <Routes>
         <Route path="/:id" element={<Anecdote find={anecdoteById}/>} />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/about" element={<About />} />
-        <Route path="/create" element={<CreateNew addNew={addNew}  />} />
+        <Route path="/create" element={<CreateNew addNew={addNew}  setNotification={setNotification}/>} />
       </Routes>
 
       <Footer />
